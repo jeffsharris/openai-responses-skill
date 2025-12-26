@@ -72,7 +72,7 @@ def main() -> None:
             }
         ],
     )
-    print(second.output_text())
+    print(second.output_text)
 
 
 if __name__ == "__main__":

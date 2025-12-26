@@ -17,7 +17,7 @@ def main() -> None:
 
     client = OpenAI()
     response = client.responses.create(**payload)
-    print(response.output_text())
+    print(response.output_text)
 
 
 if __name__ == "__main__":

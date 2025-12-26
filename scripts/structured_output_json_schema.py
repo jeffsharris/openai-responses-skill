@@ -5,27 +5,23 @@ from openai import OpenAI
 
 
 def main() -> None:
-    json_schema = {
-        "name": "task_brief",
-        "schema": {
-            "type": "object",
-            "properties": {
-                "summary": {"type": "string"},
-                "priority": {"type": "string", "enum": ["low", "medium", "high"]},
-            },
-            "required": ["summary", "priority"],
-            "additionalProperties": False,
-        },
-        "strict": True,
-    }
-
     payload = {
         "model": "gpt-4.1",
         "input": "Summarize the task 'Finish quarterly report' and set priority.",
         "text": {
             "format": {
                 "type": "json_schema",
-                "json_schema": json_schema,
+                "name": "task_brief",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "summary": {"type": "string"},
+                        "priority": {"type": "string", "enum": ["low", "medium", "high"]},
+                    },
+                    "required": ["summary", "priority"],
+                    "additionalProperties": False,
+                },
+                "strict": True,
             }
         },
     }
@@ -37,7 +33,7 @@ def main() -> None:
 
     client = OpenAI()
     response = client.responses.create(**payload)
-    data = json.loads(response.output_text())
+    data = json.loads(response.output_text)
     print(json.dumps(data, indent=2))
 
 

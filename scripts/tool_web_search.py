@@ -25,7 +25,7 @@ def main() -> None:
 
     client = OpenAI()
     response = client.responses.create(**payload)
-    print(response.output_text())
+    print(response.output_text)
 
     for item in response.output:
         if item.type != "message":

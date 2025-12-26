@@ -18,36 +18,43 @@ client = OpenAI()  # uses OPENAI_API_KEY
 - client.responses.compact(model=..., input=..., previous_response_id=...)
 
 ## Response helpers
-- response.output_text(): aggregate output_text blocks into a single string.
+- response.output_text: aggregated output_text content (SDK convenience property).
 - response.output: list of items (messages, tool calls, tool outputs, reasoning items).
 
 ## Structured outputs
-Use text.format.json_schema to force structured JSON:
+Use text.format with name/schema to force structured JSON:
 ```python
+import json
+
 response = client.responses.create(
     model="gpt-4.1",
     input="Return a summary and score.",
     text={
         "format": {
             "type": "json_schema",
-            "json_schema": {
-                "name": "summary_score",
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "summary": {"type": "string"},
-                        "score": {"type": "number"}
-                    },
-                    "required": ["summary", "score"],
-                    "additionalProperties": False
+            "name": "summary_score",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "summary": {"type": "string"},
+                    "score": {"type": "number"}
                 },
-                "strict": True
-            }
+                "required": ["summary", "score"],
+                "additionalProperties": False
+            },
+            "strict": True
         }
     },
 )
-data = response.output_text()
+data = json.loads(response.output_text)
 ```
+
+Notes:
+- response.output_text is SDK-only; it aggregates output_text items.
+- name must be [A-Za-z0-9_-] and <= 64 chars.
+- strict=true enforces a subset of JSON Schema; include every property key in
+  required and use nullable types for optional fields to avoid validation errors.
+- description is optional and can help the model comply with the schema.
 
 ## Runnable examples
 Scripts in `scripts/` are one-shot examples and default to dry-run. Set `OPENAI_API_KEY` and `OPENAI_RUN_LIVE=1` to run live calls.
